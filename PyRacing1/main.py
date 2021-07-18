@@ -9,11 +9,15 @@ import gym_game
 
 def simulate():
     global epsilon, epsilon_decay
+    max_reward = -10000.0
+    avg_reward = -10000.0
+
     for episode in range(MAX_EPISODES):
 
         # Init environment
         state = env.reset()
         total_reward = 0
+
 
         # AI tries up to MAX_TRY times
         for t in range(MAX_TRY):
@@ -43,7 +47,11 @@ def simulate():
 
             # When episode is done, print reward
             if done or t >= MAX_TRY - 1:
-                print("Episode %d finished after %i time steps with total reward = %f." % (episode, t, total_reward))
+                if total_reward > max_reward:
+                    max_reward = total_reward
+
+                avg_reward = avg_reward * 0.95 + total_reward * 0.05
+                print(f"Episode {episode} finished after {t} time steps with total reward = {total_reward}, max = {max_reward}, avg = {avg_reward:.1f}.")
                 break
 
         # exploring rate decay
