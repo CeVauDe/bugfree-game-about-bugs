@@ -137,7 +137,7 @@ class PyRace2D:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("Arial", 30)
         self.car = Car('car.png', 'map.png', [700, 650])
-        self.game_speed = 60
+        self.game_speed = 100
         self.is_render = is_render
         self.mode = 0
 
