@@ -6,6 +6,7 @@ import random
 import gym
 import gym_game
 
+
 def simulate():
     global epsilon, epsilon_decay
     for episode in range(MAX_EPISODES):

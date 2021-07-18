@@ -9,6 +9,7 @@ screen_width = 1500
 screen_height = 800
 generation = 0
 
+
 class Car:
     def __init__(self):
         self.surface = pygame.image.load("car.png")
@@ -111,6 +112,7 @@ class Car:
         rot_image = rot_image.subsurface(rot_rect).copy()
         return rot_image
 
+
 def run_car(genomes, config):
 
     # Init NEAT
@@ -133,7 +135,6 @@ def run_car(genomes, config):
     font = pygame.font.SysFont("Arial", 30)
     map = pygame.image.load('map.png')
 
-
     # Main loop
     global generation
     generation += 1
@@ -141,7 +142,6 @@ def run_car(genomes, config):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
-
 
         # Input my data and get result from network
         for index, car in enumerate(cars):
@@ -182,6 +182,7 @@ def run_car(genomes, config):
 
         pygame.display.flip()
         clock.tick(0)
+
 
 if __name__ == "__main__":
     # Set configuration file
