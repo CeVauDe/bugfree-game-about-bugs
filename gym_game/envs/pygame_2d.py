@@ -198,7 +198,6 @@ class PyGame2D:
 
         self.screen.blit(self.car.map, (0, 0))
 
-
         if self.mode == 1:
             self.screen.fill((0, 0, 0))
 
@@ -211,13 +210,10 @@ class PyGame2D:
         self.car.draw_radar(self.screen)
         self.car.draw(self.screen)
 
-
         text = self.font.render("Press 'm' to change view mode", True, (255, 255, 0))
         text_rect = text.get_rect()
         text_rect.center = (screen_width/2, 100)
         self.screen.blit(text, text_rect)
-
-
 
         pygame.display.flip()
         self.clock.tick(self.game_speed)

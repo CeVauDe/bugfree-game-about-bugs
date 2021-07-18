@@ -5,7 +5,7 @@ import sys
 import random
 import neat
 
-screen_width = 1500
+screen_width = 2000
 screen_height = 800
 generation = 0
 
