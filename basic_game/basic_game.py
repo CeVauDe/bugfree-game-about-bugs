@@ -58,7 +58,7 @@ if __name__ == "__main__":
     fps = 30
     fps_clock = pygame.time.Clock()
 
-    displayImage = pygame.image.load(r'../data/green.png')
+    displayImage = pygame.image.load(r'../data/green_ring.png')
     screen_width = displayImage.get_width()
     screen_height = displayImage.get_height()
 
