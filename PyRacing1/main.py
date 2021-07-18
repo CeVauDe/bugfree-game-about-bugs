@@ -6,14 +6,9 @@ import random
 import gym
 import gym_game
 
-# insert bug here!
-
-# r = 120m, v = 170 km/h, m = 1220 kg
 
 def simulate():
     global epsilon, epsilon_decay
-    best_reward = -10000
-    avg_reward = -10000
     for episode in range(MAX_EPISODES):
 
         # Init environment
@@ -48,12 +43,7 @@ def simulate():
 
             # When episode is done, print reward
             if done or t >= MAX_TRY - 1:
-                if total_reward > best_reward:
-                    best_reward = total_reward
-
-                avg_reward = avg_reward * 0.95 + total_reward * 0.05
-
-                print("Episode %d finished after %i time steps with total reward = %f. best = %f avg = %f" % (episode, t, total_reward, best_reward, avg_reward))
+                print("Episode %d finished after %i time steps with total reward = %f." % (episode, t, total_reward))
                 break
 
         # exploring rate decay
@@ -63,7 +53,7 @@ def simulate():
 
 if __name__ == "__main__":
     env = gym.make("Pygame-v0")
-    MAX_EPISODES = 49999
+    MAX_EPISODES = 9999
     MAX_TRY = 1000
     epsilon = 1
     epsilon_decay = 0.999
