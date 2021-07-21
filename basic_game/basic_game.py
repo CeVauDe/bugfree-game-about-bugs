@@ -23,7 +23,7 @@ def simulate():
         dist[i] = int(math.sqrt(math.pow(pos[i][0] - center[0], 2) + math.pow(pos[i][1] - center[1], 2)))
         surface.blit(textfont.render(str(dist[i]), False, (0, 0, 0)), (pos[i][0] + offset[i][0], pos[i][1] + offset[i][1]))
 
-    surface.blit(textfont.render(f"{speed:.2f}", False, (0, 0, 0)), (10, 10))
+    surface.blit(textfont.render(f"speed: {speed:.2f}", False, (0, 0, 0)), (20, 10))
 
     rot_Image = pygame.transform.rotate(blockImage, winkel)
     surface.blit(rot_Image, (int(center[0] - rot_Image.get_width()/2), int(center[1] - rot_Image.get_height()/2)))
