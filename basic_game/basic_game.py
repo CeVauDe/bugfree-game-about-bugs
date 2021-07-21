@@ -2,27 +2,47 @@ import os
 import math
 import pygame
 import sys
+import numpy as np
 
 
 def simulate():
-    pos = [[center[0], center[1]], [center[0], center[1]], [center[0], center[1]], [center[0], center[1]],
-           [center[0], center[1]], [center[0], center[1]], [center[0], center[1]], [center[0], center[1]]]
+
+    pos = np.array([center] * beam_nbr, dtype=float)
 
     pygame.font.init()
     textfont = pygame.font.SysFont('Arial', 30)
 
-    for i in range(0, 8):
+    for i in range(0, beam_nbr):
         length = 0
+
+        erg1 = math.sin(math.radians(360 - winkel + degree * i)) * (block_width / 2)
+        erg2 = math.cos(math.radians(360 - winkel + degree * i)) * (block_width / 2)
+
         while not surface.get_at((int(pos[i][0]), int(pos[i][1]))) == BORDER_COLOR and length < 2000:
             length = length + 1
-            pos[i][0] = int(center[0] + math.cos(math.radians(360 - degree)) * length * pos_fak[i][0])
-            pos[i][1] = int(center[1] + math.sin(math.radians(360 - degree)) * length * pos_fak[i][1])
+            pos[i][0] = int(center[0] + math.cos(math.radians(360 - winkel + degree * i)) * length)
+            pos[i][1] = int(center[1] + math.sin(math.radians(360 - winkel + degree * i)) * length)
 
-        pygame.draw.line(surface, (0, 0, 255), (int(center[0]), int(center[1])), (pos[i][0], pos[i][1]))
+        dist[i] = int(math.sqrt(math.pow(pos[i][0] - center[0] - erg2, 2) + math.pow(pos[i][1] - center[1] - erg1, 2)))
 
-        dist[i] = int(math.sqrt(math.pow(pos[i][0] - center[0], 2) + math.pow(pos[i][1] - center[1], 2)))
-        surface.blit(textfont.render(str(dist[i]), False, (0, 0, 0)), (pos[i][0] + offset[i][0], pos[i][1] + offset[i][1]))
+        g = 0
 
+        dist_thr1 = 155
+        dist_thr2 = int(dist_thr1/2)
+
+        if dist[i] > dist_thr1:
+            rgb = [0,0,255]
+        elif dist[i] > dist_thr2:
+            rgb = [255 - (dist[i] - dist_thr2) * int(256/dist_thr2), 0, (dist[i] - dist_thr2) * int(256/dist_thr2)]
+        else:
+            rgb = [255,0,0]
+
+        pygame.draw.line(surface, (rgb),(int(center[0] + erg2), int(center[1] + erg1)), (pos[i][0], pos[i][1]))
+
+        surface.blit(textfont.render(str(dist[i]), False, (0, 0, 0)), (pos[i][0], pos[i][1]))
+
+
+    #surface.blit(textfont.render(f"speed: {speed:.2f}, Winkel: {winkel}, sin: {erg1:.2f}, cos: {erg2:.2f}", False, (0, 0, 0)), (20, 10))
     surface.blit(textfont.render(f"speed: {speed:.2f}", False, (0, 0, 0)), (20, 10))
 
     rot_Image = pygame.transform.rotate(blockImage, winkel)
@@ -40,7 +60,7 @@ if __name__ == "__main__":
     screen_width = displayImage.get_width()
     screen_height = displayImage.get_height()
 
-    blockImage = pygame.image.load(r'../data/block.png')
+    blockImage = pygame.image.load(r'../data/car.png')
     block_width = blockImage.get_width()
     block_height = blockImage.get_height()
 
@@ -52,8 +72,8 @@ if __name__ == "__main__":
     p1 = int(screen_width / 2)
     p2 = int(screen_height / 2)
 
-    center = [(p1 + block_width / 2), (p2 + block_height / 2)]
-
+    #center = [(p1 + block_width / 2), (p2 + block_height / 2)]
+    center = [(1230), (350)]
     speed = 0
     acc = 2
     dec_fac = 112 # vmax = 15
@@ -63,9 +83,12 @@ if __name__ == "__main__":
     BORDER_COLOR = (255, 255, 255, 255)
 
     degree = 45
-    pos_fak = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1], [-1, 0], [-1, 1]]
-    dist = [0, 0, 0, 0, 0, 0, 0, 0]
-    offset = [[-20, -25], [-20, -25], [10, -25], [-20, 0], [-20, 0], [-20, 0], [-40, -25], [-20, -25]]
+    beam_nbr = int(360/degree)
+
+    dist = np.array([])
+    for x in range(0, beam_nbr):
+        dist = np.append(dist, x)
+
     winkel = 0
 
     while True:
