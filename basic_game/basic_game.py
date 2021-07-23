@@ -14,13 +14,13 @@ def simulate():
     for i in range(0, beam_nbr):
         length = 0
 
-        edge1 = math.sin(math.radians(winkel + degree * i)) * (block_width / 2)
-        edge2 = math.cos(math.radians(winkel + degree * i)) * (block_width / 2)
+        edge1 = math.sin(math.radians(winkel + beam_degree * i)) * (block_width / 2)
+        edge2 = math.cos(math.radians(winkel + beam_degree * i)) * (block_width / 2)
 
         while not surface.get_at((int(pos[i][0]), int(pos[i][1]))) == BORDER_COLOR and length < 2000:
             length = length + 1
-            pos[i][0] = int(center[0] + math.cos(math.radians(winkel + degree * i)) * length)
-            pos[i][1] = int(center[1] + math.sin(math.radians(winkel + degree * i)) * length)
+            pos[i][0] = int(center[0] + math.cos(math.radians(winkel + beam_degree * i)) * length)
+            pos[i][1] = int(center[1] + math.sin(math.radians(winkel + beam_degree * i)) * length)
 
         dist[i] = int(math.sqrt(math.pow(pos[i][0] - center[0] - edge2, 2) + math.pow(pos[i][1] - center[1] - edge1, 2)))
         dist_thr1 = 155
@@ -62,33 +62,26 @@ if __name__ == "__main__":
     White = (255, 255, 255)
     BORDER_COLOR = (255, 255, 255, 255)
 
-    p1 = int(screen_width / 2)
-    p2 = int(screen_height / 2)
+    mid = np.array ([ int(screen_width / 2),int(screen_height / 2)])
 
     center = [(1230), (350)]
-    center_new = [(1230), (350)]
-    center_L = [(630), (350)]
-    center_R = [(830), (350)]
     delta_xy = [0, 0]
 
     speed = 0
-    acc = 2
-    dec_fac = 112  # vmax = 15
-    brake = -2
-    step = 5
+    acc = [2, 112, -2] #acceleration, air resistance factor, braking]      112 -> vmax = 15
     time_fac = 5
 
-    degree = 45
-    beam_nbr = int(360 / degree)
+    beam_degree = 45
+    beam_nbr = int(360 / beam_degree)
 
     dist = np.array([])
     for x in range(0, beam_nbr):
         dist = np.append(dist, x)
 
     winkel = 0
-    turn_factor = 0
+
     turn_eff_factor = 1 / 9 * 2
-    turn_orth_factor = 5
+    turn_orth_factor = 10
 
     joystick_enable = 0
     joystick = pygame.joystick.Joystick(0)
@@ -108,13 +101,13 @@ if __name__ == "__main__":
             if key_input[pygame.K_LEFT]:
                 turn_factor = -1
             if key_input[pygame.K_UP]:
-                speed = max(1 / fps * (acc - speed * speed / dec_fac) * time_fac + speed, 0)
+                speed = max(1 / fps * (acc[0] - math.pow(speed , 2) / acc[1]) * time_fac + speed, 0)
             if key_input[pygame.K_RIGHT]:
                 turn_factor = 1
             if key_input[pygame.K_DOWN]:
-                speed = max(1 / fps * (brake - speed * speed / dec_fac) * time_fac + speed, 0)
+                speed = max(1 / fps * (acc[2] - math.pow(speed , 2) / acc[1]) * time_fac + speed, 0)
             if not (key_input[pygame.K_DOWN] or key_input[pygame.K_UP]):
-                speed = max(1 / fps * (0 - speed * speed / dec_fac) * time_fac + speed, 0)
+                speed = max(1 / fps * (0 - math.pow(speed , 2) / acc[1]) * time_fac + speed, 0)
             if not (key_input[pygame.K_LEFT] or key_input[pygame.K_RIGHT]):
                 turn_factor = 0
 
@@ -124,9 +117,9 @@ if __name__ == "__main__":
 
                 if number == 3:
                     if abs(axis) > 0.05:
-                        speed = max(1 / fps * (acc * (-axis) - speed * speed / dec_fac) * time_fac + speed, 0)
+                        speed = max(1 / fps * (acc * (-axis) - math.pow(speed , 2) / acc[1]) * time_fac + speed, 0)
                     else:
-                        speed = max(1 / fps * (0 - speed * speed / dec_fac) * time_fac + speed, 0)
+                        speed = max(1 / fps * (0 - math.pow(speed , 2) / acc[1]) * time_fac + speed, 0)
                 elif number == 0:
                     if abs(axis) > 0.05:
                         turn_factor = axis
@@ -134,10 +127,8 @@ if __name__ == "__main__":
                         turn_factor = 0
 
         if speed > 0:
-            delta_s = np.array([speed, speed * turn_orth_factor * (100 - math.pow(speed, 2) * turn_eff_factor) / 100 * turn_factor])
-            delta_w = math.atan(delta_s[1] / delta_s[0])
+            delta_w = math.atan(speed * turn_orth_factor * (100 - math.pow(speed, 2) * turn_eff_factor) / 100 * turn_factor / speed)
         else:
-            delta_s = [0, 0]
             delta_w = 0
 
         winkel += delta_w
@@ -147,8 +138,8 @@ if __name__ == "__main__":
         if winkel >= 360:
             winkel -= 360
 
-        center[0] = center[0] + delta_xy[1]
-        center[1] = center[1] - delta_xy[0]
+        center[0] += delta_xy[1]
+        center[1] -= delta_xy[0]
 
         simulate()
 
